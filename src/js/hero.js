@@ -1,6 +1,7 @@
 /* ==========================================================================
    HERO — Canvas image sequence scrubbing
-   La secuencia son 120 frames webp (1600x900) en /seq/frame_NNN.webp.
+   La secuencia son 120 frames webp (1280x720, resolución nativa del video
+   fuente, sin upscaling) en /seq/frame_NNN.webp.
    El scroll controla el frame dibujado en el canvas (ver src/js/hero.js).
    ========================================================================== */
 
@@ -10,8 +11,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 120;
-const FRAME_WIDTH = 1600;
-const FRAME_HEIGHT = 900;
+const FRAME_WIDTH = 1280;
+const FRAME_HEIGHT = 720;
 /* La mujer está apenas a la derecha del centro del cuadro */
 const FOCAL_X = 0.6;
 const MAX_DPR = 2;
