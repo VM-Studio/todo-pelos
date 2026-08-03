@@ -435,6 +435,31 @@ ol {
   max-width: 42ch;
 }
 
+.servicios-cta-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(3rem, 6vw, 4.5rem);
+}
+
+.servicios-cta {
+  display: inline-block;
+  padding: 0.85em 2.4em;
+  border-radius: 999px;
+  border: 1px solid var(--color-marron-oscuro);
+  color: var(--color-marron-oscuro);
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.servicios-cta:hover {
+  background-color: var(--color-marron-oscuro);
+  color: var(--color-blanco-calido);
+}
+
 /* ==========================================================================
    ANTES Y DESPUÉS — comparador
    ========================================================================== */
