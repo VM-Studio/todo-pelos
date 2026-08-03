@@ -317,7 +317,7 @@ ol {
      centro/abajo más liviano (donde está ella). En mobile pedimos más
      transparencia general que en desktop, así se ve más nítida a ella. */
   .hero-velo {
-    --hero-velo-opacidad: 0.2;
+    --hero-velo-opacidad: 0.1;
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--color-crema) calc(var(--hero-velo-opacidad) * 165%), transparent) 0%,
