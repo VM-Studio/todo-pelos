@@ -192,8 +192,7 @@ function buildFooter() {
   footer.innerHTML = `
     <div class="footer-top">
       <div class="footer-brand">
-        <p class="footer-nombre">${DATOS.nombre}</p>
-        <p class="footer-tagline">${DATOS.tagline}</p>
+        <img class="footer-logo" src="/footer.png" alt="${DATOS.nombre} — ${DATOS.tagline}" />
       </div>
       <div class="footer-datos">
         <p>${DATOS.direccion}</p>
