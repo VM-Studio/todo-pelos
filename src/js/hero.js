@@ -35,6 +35,9 @@ const CONFIGS = {
     height: 1600,
     modo: 'fit-ancho',
     focal: 0.5,
+    /* Opacidad de la propia imagen dibujada en el canvas (no un velo
+       aparte): así se funde de verdad con el fondo --color-crema. */
+    opacidad: 0.55,
   },
 };
 
@@ -158,7 +161,9 @@ export function initHero() {
     }
 
     ctx.clearRect(0, 0, cssW, cssH);
+    ctx.globalAlpha = config.opacidad ?? 1;
     ctx.drawImage(img, dx, dy, drawW, drawH);
+    ctx.globalAlpha = 1;
     st.currentFrame = idx;
   }
 
