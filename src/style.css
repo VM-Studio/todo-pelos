@@ -288,6 +288,18 @@ ol {
     max-width: 20rem;
   }
 
+  /* Panel translúcido SOLO detrás del texto: la imagen queda transparente
+     en el resto del hero, pero el título se sigue leyendo bien sin
+     necesitar un velo general fuerte sobre toda la foto. */
+  .hero-intro,
+  .hero-outro {
+    background: color-mix(in srgb, var(--color-crema) 62%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 24px;
+    padding: 1.75rem 1.5rem;
+  }
+
   .hero-outro {
     left: 50%;
     top: 15vh;
