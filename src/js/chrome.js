@@ -113,6 +113,9 @@ function fillContacto() {
   document.querySelectorAll('[data-href]').forEach((el) => {
     el.href = hrefs[el.dataset.href] ?? '#';
   });
+  document.querySelectorAll('[data-src-dato]').forEach((el) => {
+    el.src = DATOS[el.dataset.srcDato] ?? '';
+  });
 
   if (!reducedMotion) {
     const els = gsap.utils.toArray(

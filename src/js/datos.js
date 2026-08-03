@@ -6,10 +6,16 @@ export const DATOS = {
   nombre: 'Todo Pelos',
   tagline: 'Hair & Beauty Salon',
   whatsapp: '5491112345678', // [NUMERO CON CODIGO DE PAIS]
-  direccion: '[DIRECCION O ZONA DEL LOCAL]',
-  horarios: '[DIAS Y HORARIOS, ej: Martes a sábados de 10 a 19]',
-  instagram: '[USUARIO]', // sin @
-  mapsUrl: '#', // [LINK DE GOOGLE MAPS AL LOCAL]
+  direccion: 'Avenida Ingeniero Eduardo Madero, Del Viso',
+  horarios: 'Lunes a viernes de 9 a 18hs',
+  instagram: 'todo.pelos', // sin @
+  mapsUrl:
+    'https://www.google.com/maps/search/?api=1&query=' +
+    encodeURIComponent('Avenida Ingeniero Eduardo Madero, Del Viso, Buenos Aires, Argentina'),
+  mapsEmbedUrl:
+    'https://www.google.com/maps?q=' +
+    encodeURIComponent('Avenida Ingeniero Eduardo Madero, Del Viso, Buenos Aires, Argentina') +
+    '&output=embed',
 };
 
 export const MENSAJE_WHATSAPP = 'Hola! Quiero reservar un turno';
