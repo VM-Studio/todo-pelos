@@ -314,9 +314,10 @@ ol {
   }
 
   /* Velo reorientado: franja superior más opaca (donde vive el título),
-     centro/abajo más liviano (donde está ella). Misma intensidad
-     general que desktop vía --hero-velo-opacidad. */
+     centro/abajo más liviano (donde está ella). En mobile pedimos más
+     transparencia general que en desktop, así se ve más nítida a ella. */
   .hero-velo {
+    --hero-velo-opacidad: 0.2;
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--color-crema) calc(var(--hero-velo-opacidad) * 165%), transparent) 0%,
