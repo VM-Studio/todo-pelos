@@ -25,8 +25,7 @@ function buildHeader() {
   header.className = 'site-header';
   header.innerHTML = `
     <a class="header-brand" href="#hero">
-      <span class="header-nombre">${DATOS.nombre}</span>
-      <span class="header-tagline">${DATOS.tagline}</span>
+      <img class="header-logo" src="/navbar.png" alt="${DATOS.nombre} — ${DATOS.tagline}" />
     </a>
     <nav class="header-nav" aria-label="Navegación principal">
       ${NAV_LINKS.map(([t, h]) => `<a class="header-link" href="${h}">${t}</a>`).join('')}

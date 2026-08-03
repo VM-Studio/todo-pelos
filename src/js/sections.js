@@ -5,6 +5,7 @@
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { initGaleria } from './servicios-galeria.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -43,7 +44,7 @@ function initReveals() {
 /* ---------- Comparador antes/después ---------- */
 function initComparador() {
   const frame = document.querySelector('.comparador-frame');
-  if (!frame) return;
+  if (!frame) return null;
 
   const capaAntes = frame.querySelector('.comparador-capa-antes');
   const divisor = frame.querySelector('.comparador-divisor');
@@ -89,11 +90,20 @@ function initComparador() {
   });
 
   render();
+
+  /* API mínima para que la galería resetee el divisor al cambiar de servicio */
+  return {
+    reset() {
+      pos = 50;
+      render();
+    },
+  };
 }
 
 export function initSections() {
   initReveals();
-  initComparador();
+  const comparador = initComparador();
+  initGaleria(comparador);
   /* El contenido nuevo cambia las alturas: recalcular triggers del hero */
   ScrollTrigger.refresh();
 }

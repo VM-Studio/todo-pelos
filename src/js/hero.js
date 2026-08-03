@@ -1,8 +1,17 @@
 /* ==========================================================================
    HERO — Canvas image sequence scrubbing
-   La secuencia son 120 frames webp (1280x720, resolución nativa del video
-   fuente, sin upscaling) en /seq/frame_NNN.webp.
-   El scroll controla el frame dibujado en el canvas (ver src/js/hero.js).
+   Dos secuencias de fotogramas webp:
+     - Desktop: 120 frames 1280x720 en /seq/, modo "cover" (llena el
+       viewport, recorta con foco a la derecha del centro).
+     - Mobile:  120 frames 900x1600 en /seq-mobile/, modo "fit-ancho"
+       (se ve el frame COMPLETO a lo ancho, sin zoom ni recorte lateral).
+   La secuencia se elige por orientación de viewport (vertical → mobile,
+   horizontal → desktop), tanto al iniciar como en cada resize/cambio
+   de orientación que cruce el umbral (con debounce). El estado de
+   carga anterior simplemente se descarta: los frames que venían
+   bajando terminan escribiendo en un array que ya nadie usa, no hace
+   falta abortar el request explícitamente.
+   El scroll controla el frame dibujado en el canvas.
    ========================================================================== */
 
 import { gsap } from 'gsap';
@@ -10,14 +19,34 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FRAME_COUNT = 120;
-const FRAME_WIDTH = 1280;
-const FRAME_HEIGHT = 720;
-/* La mujer está apenas a la derecha del centro del cuadro */
-const FOCAL_X = 0.6;
+const CONFIGS = {
+  desktop: {
+    ruta: '/seq/',
+    frames: 120,
+    width: 1280,
+    height: 720,
+    modo: 'cover',
+    focal: 0.6,
+  },
+  mobile: {
+    ruta: '/seq-mobile/',
+    frames: 120,
+    width: 900,
+    height: 1600,
+    modo: 'fit-ancho',
+    focal: 0.5,
+  },
+};
+
 const MAX_DPR = 2;
 
-const framePath = (i) => `/seq/frame_${String(i + 1).padStart(3, '0')}.webp`;
+const framePath = (config, i) =>
+  `${config.ruta}frame_${String(i + 1).padStart(3, '0')}.webp`;
+
+/* Vertical (alto > ancho) => mobile; si no, desktop */
+function pickKey() {
+  return window.innerHeight > window.innerWidth ? 'mobile' : 'desktop';
+}
 
 export function initHero() {
   const section = document.querySelector('#hero');
@@ -35,40 +64,58 @@ export function initHero() {
     '(prefers-reduced-motion: reduce)'
   ).matches;
 
-  /* ---------- Carga de frames ---------- */
-  const images = new Array(FRAME_COUNT).fill(null);
-  const failed = new Set();
-  let currentFrame = -1; // último frame dibujado
+  /* ---------- Estado de carga por secuencia activa ---------- */
+  function createState(key) {
+    const config = CONFIGS[key];
+    return {
+      key,
+      config,
+      images: new Array(config.frames).fill(null),
+      failed: new Set(),
+      currentFrame: -1,
+    };
+  }
 
-  function loadFrame(i, priority = false) {
+  let activeKey = pickKey();
+  let state = createState(activeKey);
+
+  function applyStageClass() {
+    stage.classList.toggle(
+      'hero-stage--fit',
+      state.config.modo === 'fit-ancho'
+    );
+  }
+  applyStageClass();
+
+  function loadFrame(st, i, priority = false) {
     return new Promise((resolve) => {
-      if (images[i] || failed.has(i)) return resolve();
+      if (st.images[i] || st.failed.has(i)) return resolve();
       const img = new Image();
       if (priority) img.fetchPriority = 'high';
       img.decoding = 'async';
       img.onload = () => {
-        images[i] = img;
+        st.images[i] = img;
         resolve(img);
       };
       img.onerror = () => {
-        failed.add(i); // frame que falla se saltea
+        st.failed.add(i); // frame que falla se saltea
         resolve();
       };
-      img.src = framePath(i);
+      img.src = framePath(st.config, i);
     });
   }
 
   /* Frame cargado más cercano al pedido */
-  function nearestLoaded(i) {
-    if (images[i]) return i;
-    for (let d = 1; d < FRAME_COUNT; d++) {
-      if (images[i - d]) return i - d;
-      if (images[i + d]) return i + d;
+  function nearestLoaded(st, i) {
+    if (st.images[i]) return i;
+    for (let d = 1; d < st.config.frames; d++) {
+      if (st.images[i - d]) return i - d;
+      if (st.images[i + d]) return i + d;
     }
     return -1;
   }
 
-  /* ---------- Dibujo con lógica cover + punto focal ---------- */
+  /* ---------- Dibujo ---------- */
   let cssW = 0;
   let cssH = 0;
 
@@ -81,85 +128,110 @@ export function initHero() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function drawFrame(i) {
-    const idx = nearestLoaded(i);
+  function drawFrame(st, i) {
+    const idx = nearestLoaded(st, i);
     if (idx === -1) return;
-    const img = images[idx];
+    const img = st.images[idx];
+    const { config } = st;
 
-    /* cover: escala mínima que llena el viewport sin deformar */
-    const scale = Math.max(cssW / FRAME_WIDTH, cssH / FRAME_HEIGHT);
-    const drawW = FRAME_WIDTH * scale;
-    const drawH = FRAME_HEIGHT * scale;
+    let dx, dy, drawW, drawH;
 
-    /* recorte horizontal centrado en el punto focal, sin salirse del cuadro */
-    let dx = cssW / 2 - FOCAL_X * drawW;
-    dx = Math.min(0, Math.max(cssW - drawW, dx));
-    const dy = (cssH - drawH) / 2;
+    if (config.modo === 'cover') {
+      /* cover: escala mínima que llena el viewport sin deformar */
+      const scale = Math.max(cssW / config.width, cssH / config.height);
+      drawW = config.width * scale;
+      drawH = config.height * scale;
+      /* recorte horizontal centrado en el punto focal, sin salirse del cuadro */
+      dx = cssW / 2 - config.focal * drawW;
+      dx = Math.min(0, Math.max(cssW - drawW, dx));
+      dy = (cssH - drawH) / 2;
+    } else {
+      /* fit-ancho: SIN zoom. El ancho del frame ocupa el ancho de la
+         pantalla y se centra verticalmente. Si el alto escalado supera
+         el alto del viewport, se recorta por abajo (nunca se corta la
+         cabeza, que vive arriba del frame). */
+      const scale = cssW / config.width;
+      drawW = cssW;
+      drawH = config.height * scale;
+      dx = 0;
+      dy = drawH <= cssH ? (cssH - drawH) / 2 : 0;
+    }
 
     ctx.clearRect(0, 0, cssW, cssH);
     ctx.drawImage(img, dx, dy, drawW, drawH);
-    currentFrame = idx;
+    st.currentFrame = idx;
   }
 
-  function requestFrame(i) {
-    const clamped = Math.max(0, Math.min(FRAME_COUNT - 1, i));
-    if (clamped === currentFrame && images[clamped]) return;
-    drawFrame(clamped);
+  function requestFrame(st, i) {
+    const clamped = Math.max(0, Math.min(st.config.frames - 1, i));
+    if (clamped === st.currentFrame && st.images[clamped]) return;
+    drawFrame(st, clamped);
   }
 
   resizeCanvas();
 
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      resizeCanvas();
-      if (currentFrame >= 0) drawFrame(currentFrame);
-    }, 150);
-  });
-
   /* ---------- Estrategia de precarga ---------- */
-  async function preloadResto() {
+  async function preloadResto(st) {
     // Pasada gruesa: 1 de cada 5 a lo largo de toda la secuencia
     const coarse = [];
-    for (let i = 5; i < FRAME_COUNT; i += 5) coarse.push(loadFrame(i));
+    for (let i = 5; i < st.config.frames; i += 5) coarse.push(loadFrame(st, i));
     await Promise.all(coarse);
 
     // Relleno de intermedios
     const rest = [];
-    for (let i = 1; i < FRAME_COUNT; i++) {
-      if (!images[i] && !failed.has(i)) rest.push(loadFrame(i));
+    for (let i = 1; i < st.config.frames; i++) {
+      if (!st.images[i] && !st.failed.has(i)) rest.push(loadFrame(st, i));
     }
     await Promise.all(rest);
   }
 
-  async function preload() {
+  async function preload(st) {
     // Frame 1 primero, con prioridad alta: el hero nunca se ve vacío
-    await loadFrame(0, true);
-    drawFrame(0);
+    await loadFrame(st, 0, true);
+    if (st === state) drawFrame(st, 0);
 
     // El resto arranca DESPUÉS del primer paint para no competir
     // con el render inicial (rAF doble + idle callback)
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => preloadResto(), { timeout: 1500 });
+          requestIdleCallback(() => preloadResto(st), { timeout: 1500 });
         } else {
-          setTimeout(preloadResto, 200);
+          setTimeout(() => preloadResto(st), 200);
         }
       });
     });
   }
-  preload();
+  preload(state);
 
   /* ---------- Reduced motion: último frame estático, sin pin ---------- */
   if (reducedMotion) {
     section.classList.add('hero--static');
-    loadFrame(FRAME_COUNT - 1).then(() => drawFrame(FRAME_COUNT - 1));
+    loadFrame(state, state.config.frames - 1).then(() =>
+      drawFrame(state, state.config.frames - 1)
+    );
     if (hint) hint.remove();
     if (outro) outro.remove();
     return;
   }
+
+  /* ---------- Resize / cambio de orientación ---------- */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resizeCanvas();
+      const newKey = pickKey();
+      if (newKey !== state.key) {
+        activeKey = newKey;
+        state = createState(activeKey);
+        applyStageClass();
+        preload(state);
+      } else if (state.currentFrame >= 0) {
+        drawFrame(state, state.currentFrame);
+      }
+    }, 200);
+  });
 
   /* ---------- Scrubbing con ScrollTrigger ---------- */
   let hintHidden = false;
@@ -172,8 +244,8 @@ export function initHero() {
     onUpdate(self) {
       const p = self.progress;
 
-      // progreso -> frame (interpolación + redondeo)
-      requestFrame(Math.round(p * (FRAME_COUNT - 1)));
+      // progreso -> frame (interpolación + redondeo) de la secuencia activa
+      requestFrame(state, Math.round(p * (state.config.frames - 1)));
 
       // barra de progreso
       progressFill.style.transform = `scaleX(${p})`;
