@@ -1060,12 +1060,16 @@ ol {
 .footer-brand {
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 
 .footer-logo {
   display: block;
-  height: 110px;
+  /* Se agranda "hacia afuera" con margen negativo vertical, igual que
+     el logo del header, sin empujar la altura del footer. */
+  height: 220px;
   width: auto;
+  margin: -55px 0;
 }
 
 .footer-datos {
@@ -1159,7 +1163,8 @@ button:focus-visible {
   }
 
   .footer-logo {
-    height: 80px;
+    height: 150px;
+    margin: -35px 0;
   }
 
   .footer-bottom {
