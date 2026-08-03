@@ -642,7 +642,7 @@ ol {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.4rem clamp(1.5rem, 6vw, 6rem);
+  padding: 0.9rem clamp(1.5rem, 6vw, 6rem);
   color: var(--color-tinta);
   overflow: visible;
   transition:
@@ -667,9 +667,9 @@ ol {
   display: block;
   /* Un poco más grande que la franja del navbar: se agranda "hacia afuera"
      con margen negativo vertical, sin empujar demasiado la altura del header */
-  height: 160px;
+  height: 108px;
   width: auto;
-  margin: -35px 0;
+  margin: -22px 0;
   /* sombra crema sutil por legibilidad sobre los frames del hero */
   filter: drop-shadow(0 0 10px rgba(233, 217, 195, 0.65));
 }
@@ -1108,8 +1108,8 @@ button:focus-visible {
   }
 
   .header-logo {
-    height: 100px;
-    margin: -20px 0;
+    height: 70px;
+    margin: -14px 0;
   }
 
   .contacto {
