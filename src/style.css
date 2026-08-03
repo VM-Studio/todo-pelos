@@ -750,7 +750,8 @@ ol {
 #servicios,
 #antes-despues,
 #calidad,
-#contacto {
+#contacto,
+#formulario {
   scroll-margin-top: 76px;
 }
 
@@ -895,6 +896,95 @@ ol {
 }
 
 /* ==========================================================================
+   CONTACTANOS — formulario
+   ========================================================================== */
+
+.formulario {
+  background-color: #ffffff;
+  padding: 120px clamp(1.5rem, 6vw, 6rem);
+}
+
+.formulario-form {
+  max-width: 42rem;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.formulario-campo--full {
+  grid-column: 1 / -1;
+}
+
+.formulario-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-bronce);
+  margin-bottom: 0.6rem;
+}
+
+.formulario-input {
+  width: 100%;
+  padding: 0.85em 1em;
+  border-radius: 10px;
+  border: 1px solid rgba(46, 35, 24, 0.25);
+  background-color: transparent;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-tinta);
+  transition: border-color 0.25s ease;
+}
+
+.formulario-input::placeholder {
+  color: rgba(46, 35, 24, 0.4);
+}
+
+.formulario-input:focus {
+  outline: none;
+  border-color: var(--color-marron-oscuro);
+}
+
+.formulario-textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.formulario-envio {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.formulario-submit {
+  padding: 0.85em 2.4em;
+  border-radius: 999px;
+  border: none;
+  background-color: var(--color-marron-oscuro);
+  color: var(--color-blanco-calido);
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.formulario-submit:hover {
+  background-color: var(--color-bronce);
+  transform: translateY(-2px);
+}
+
+.formulario-feedback {
+  font-size: 0.85rem;
+  color: var(--color-bronce);
+  min-height: 1.2em;
+}
+
+/* ==========================================================================
    FAB WHATSAPP
    ========================================================================== */
 
@@ -1028,6 +1118,15 @@ button:focus-visible {
   }
 
   .contacto-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+
+  .formulario-form {
     grid-template-columns: 1fr;
   }
 

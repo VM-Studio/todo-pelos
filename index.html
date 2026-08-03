@@ -238,6 +238,58 @@
     </div>
   </section>
 
+  <!-- CONTACTANOS — formulario -->
+  <section class="formulario" id="formulario">
+    <header class="section-head section-head--center">
+      <p class="section-eyebrow">Contactanos</p>
+      <h2 class="section-title">Escribinos <em>tu consulta.</em></h2>
+      <p class="section-subtitulo">
+        Completá el formulario y te respondemos por WhatsApp a la brevedad.
+      </p>
+    </header>
+
+    <form class="formulario-form" id="formulario-form" novalidate>
+      <div class="formulario-campo">
+        <label class="formulario-label" for="form-nombre">Nombre</label>
+        <input
+          class="formulario-input"
+          type="text"
+          id="form-nombre"
+          name="nombre"
+          autocomplete="name"
+          required
+        />
+      </div>
+
+      <div class="formulario-campo">
+        <label class="formulario-label" for="form-telefono">Teléfono</label>
+        <input
+          class="formulario-input"
+          type="tel"
+          id="form-telefono"
+          name="telefono"
+          autocomplete="tel"
+        />
+      </div>
+
+      <div class="formulario-campo formulario-campo--full">
+        <label class="formulario-label" for="form-mensaje">Mensaje</label>
+        <textarea
+          class="formulario-input formulario-textarea"
+          id="form-mensaje"
+          name="mensaje"
+          rows="4"
+          required
+        ></textarea>
+      </div>
+
+      <div class="formulario-campo formulario-campo--full formulario-envio">
+        <button class="formulario-submit" type="submit">Enviar consulta</button>
+        <p class="formulario-feedback" id="formulario-feedback" aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
   <!-- FOOTER -->
 
   <script type="module" src="/src/main.js"></script>

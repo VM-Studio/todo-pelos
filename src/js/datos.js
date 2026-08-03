@@ -20,8 +20,8 @@ export const DATOS = {
 
 export const MENSAJE_WHATSAPP = 'Hola! Quiero reservar un turno';
 
-export const waLink = () =>
-  `https://wa.me/${DATOS.whatsapp}?text=${encodeURIComponent(MENSAJE_WHATSAPP)}`;
+export const waLink = (mensaje = MENSAJE_WHATSAPP) =>
+  `https://wa.me/${DATOS.whatsapp}?text=${encodeURIComponent(mensaje)}`;
 
 /* Número formateado para mostrar: +54 9 11 1234-5678 (aproximado) */
 export const whatsappFormateado = () => {

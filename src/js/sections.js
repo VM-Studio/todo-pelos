@@ -6,6 +6,7 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { initGaleria } from './servicios-galeria.js';
+import { waLink } from './datos.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,9 +19,10 @@ function initReveals() {
   if (reducedMotion) return;
 
   const groups = [
-    ['#servicios .section-head', '#servicios .servicio'],
+    ['#servicios .section-head', '#servicios .servicio', '#servicios .servicios-cta-wrap'],
     ['#antes-despues .section-head', '#antes-despues .comparador'],
     ['#calidad .section-head', '#calidad .calidad-item', '#calidad .calidad-cierre'],
+    ['#formulario .section-head', '#formulario .formulario-form'],
   ];
 
   groups.forEach((selectors) => {
@@ -100,10 +102,46 @@ function initComparador() {
   };
 }
 
+/* ---------- Formulario de contacto ----------
+   Sin backend propio: arma el mensaje con los datos cargados y abre
+   WhatsApp con todo completado, para que la consulta llegue directo. */
+function initFormulario() {
+  const form = document.querySelector('#formulario-form');
+  if (!form) return;
+
+  const feedback = form.querySelector('#formulario-feedback');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nombre = form.nombre.value.trim();
+    const telefono = form.telefono.value.trim();
+    const mensaje = form.mensaje.value.trim();
+
+    if (!nombre || !mensaje) {
+      feedback.textContent = 'Completá al menos tu nombre y tu mensaje.';
+      return;
+    }
+
+    const partes = [
+      `Hola! Soy ${nombre}.`,
+      telefono ? `Mi teléfono: ${telefono}.` : null,
+      mensaje,
+    ].filter(Boolean);
+
+    const url = waLink(partes.join(' '));
+    window.open(url, '_blank', 'noopener');
+
+    feedback.textContent = 'Te abrimos WhatsApp con tu consulta lista para enviar.';
+    form.reset();
+  });
+}
+
 export function initSections() {
   initReveals();
   const comparador = initComparador();
   initGaleria(comparador);
+  initFormulario();
   /* El contenido nuevo cambia las alturas: recalcular triggers del hero */
   ScrollTrigger.refresh();
 }
