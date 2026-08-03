@@ -32,7 +32,6 @@
 html {
   /* El hero usa animación controlada por scroll: NO usar smooth */
   scroll-behavior: auto;
-  overflow-x: hidden;
 }
 
 body {
@@ -42,7 +41,6 @@ body {
   color: var(--color-tinta);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
 }
 
 h1,

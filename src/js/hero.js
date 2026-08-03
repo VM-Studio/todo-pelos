@@ -191,14 +191,10 @@ export function initHero() {
     if (st === state) drawFrame(st, 0);
 
     // El resto arranca DESPUÉS del primer paint para no competir
-    // con el render inicial (rAF doble + idle callback)
+    // con el render inicial (rAF doble + timeout corto)
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(() => preloadResto(st), { timeout: 1500 });
-        } else {
-          setTimeout(() => preloadResto(st), 200);
-        }
+        setTimeout(() => preloadResto(st), 200);
       });
     });
   }

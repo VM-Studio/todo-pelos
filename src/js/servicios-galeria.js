@@ -219,11 +219,16 @@ export function initGaleria(comparador) {
   const precargarResto = () => {
     SERVICIOS.forEach((s) => cargarPar(s));
   };
+  const idle = (fn) => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(fn, { timeout: 1200 });
+    } else {
+      setTimeout(fn, 1200);
+    }
+  };
   if (document.readyState === 'complete') {
-    (window.requestIdleCallback || setTimeout)(precargarResto, 1200);
+    idle(precargarResto);
   } else {
-    window.addEventListener('load', () => {
-      (window.requestIdleCallback || setTimeout)(precargarResto, 1200);
-    });
+    window.addEventListener('load', () => idle(precargarResto));
   }
 }
