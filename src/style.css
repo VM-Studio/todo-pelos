@@ -356,7 +356,8 @@ ol {
 
 .servicios,
 .antes-despues,
-.calidad {
+.calidad,
+.quienes-somos {
   padding: 120px clamp(1.5rem, 6vw, 6rem);
 }
 
@@ -424,6 +425,59 @@ ol {
 }
 
 /* ==========================================================================
+   QUIÉNES SOMOS
+   ========================================================================== */
+
+.quienes-somos {
+  background-color: var(--color-crema);
+}
+
+.quienes-somos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 5vw, 4rem);
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.quienes-somos-item {
+  border-top: 1px solid rgba(46, 35, 24, 0.15);
+  padding-top: 1.5rem;
+}
+
+.quienes-somos-titulo {
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  margin-bottom: 0.75rem;
+}
+
+.quienes-somos-desc {
+  font-weight: 300;
+  line-height: 1.65;
+}
+
+.quienes-somos-cierre {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  line-height: 1.35;
+  color: var(--color-marron-oscuro);
+  text-align: center;
+  max-width: 32rem;
+  margin: clamp(3rem, 6vw, 4.5rem) auto 1.5rem;
+}
+
+.quienes-somos-firma {
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--color-tinta);
+  text-align: center;
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+/* ==========================================================================
    SERVICIOS
    ========================================================================== */
 
@@ -455,6 +509,26 @@ ol {
   font-weight: 300;
   line-height: 1.65;
   max-width: 42ch;
+}
+
+.servicio-lista {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 42ch;
+}
+
+.servicio-lista li {
+  position: relative;
+  padding-left: 1.4rem;
+  font-weight: 300;
+  line-height: 1.55;
+}
+
+.servicio-lista li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--color-bronce);
 }
 
 .servicios-cta-wrap {
@@ -631,13 +705,15 @@ ol {
 
   .servicios,
   .antes-despues,
-  .calidad {
+  .calidad,
+  .quienes-somos {
     padding-top: 72px;
     padding-bottom: 72px;
   }
 
   .servicios-grid,
-  .calidad-grid {
+  .calidad-grid,
+  .quienes-somos-grid {
     grid-template-columns: 1fr;
   }
 
@@ -773,7 +849,8 @@ ol {
 #antes-despues,
 #calidad,
 #contacto,
-#formulario {
+#formulario,
+#quienes-somos {
   scroll-margin-top: 76px;
 }
 

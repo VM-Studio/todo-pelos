@@ -9,6 +9,7 @@ import { DATOS, waLink, whatsappFormateado } from './datos.js';
 gsap.registerPlugin(ScrollTrigger);
 
 const NAV_LINKS = [
+  ['Quiénes somos', '#quienes-somos'],
   ['Servicios', '#servicios'],
   ['Antes y después', '#antes-despues'],
   ['Calidad', '#calidad'],

@@ -19,6 +19,7 @@ function initReveals() {
   if (reducedMotion) return;
 
   const groups = [
+    ['#quienes-somos .section-head', '#quienes-somos .quienes-somos-item', '#quienes-somos .quienes-somos-cierre', '#quienes-somos .quienes-somos-firma'],
     ['#servicios .section-head', '#servicios .servicio', '#servicios .servicios-cta-wrap'],
     ['#antes-despues .section-head', '#antes-despues .comparador'],
     ['#calidad .section-head', '#calidad .calidad-item', '#calidad .calidad-cierre'],
