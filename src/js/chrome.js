@@ -9,10 +9,12 @@ import { DATOS, waLink, whatsappFormateado } from './datos.js';
 gsap.registerPlugin(ScrollTrigger);
 
 const NAV_LINKS = [
-  ['Quiénes somos', '#quienes-somos'],
+  ['Nosotros', '#quienes-somos'],
+  ['El salón', '#salon'],
   ['Servicios', '#servicios'],
+  ['Pelucas', '#pelucas'],
+  ['Cortinas', '#cortinas'],
   ['Antes y después', '#antes-despues'],
-  ['Calidad', '#calidad'],
   ['Contacto', '#contacto'],
 ];
 
@@ -46,6 +48,18 @@ function buildHeader() {
     onLeaveBack: () => header.classList.remove('site-header--solid'),
   });
 
+  /* Link activo según la sección visible */
+  const links = header.querySelectorAll('.header-link');
+  NAV_LINKS.forEach(([, h], i) => {
+    if (!document.querySelector(h)) return;
+    ScrollTrigger.create({
+      trigger: h,
+      start: 'top 45%',
+      end: 'bottom 45%',
+      onToggle: (self) => links[i].classList.toggle('is-activo', self.isActive),
+    });
+  });
+
   return header;
 }
 
@@ -70,6 +84,7 @@ function buildMobileMenu(header) {
   function toggle(force) {
     open = force !== undefined ? force : !open;
     burger.classList.toggle('is-open', open);
+    header.classList.toggle('is-menu-abierto', open);
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
     document.body.style.overflow = open ? 'hidden' : '';
@@ -105,6 +120,7 @@ function fillContacto() {
   const hrefs = {
     mapsUrl: DATOS.mapsUrl,
     wa: waLink(),
+    waPelucas: waLink('Hola! Quiero consultar por las pelucas disponibles.'),
     instagramUrl: `https://instagram.com/${DATOS.instagram}`,
   };
 

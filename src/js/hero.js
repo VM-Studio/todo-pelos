@@ -1,16 +1,20 @@
 /* ==========================================================================
    HERO — Canvas image sequence scrubbing
-   Dos secuencias de fotogramas webp:
-     - Desktop: 120 frames 1280x720 en /seq/, modo "cover" (llena el
-       viewport, recorta con foco a la derecha del centro).
-     - Mobile:  120 frames 900x1600 en /seq-mobile/, modo "fit-ancho"
-       (se ve el frame COMPLETO a lo ancho, sin zoom ni recorte lateral).
-   La secuencia se elige por orientación de viewport (vertical → mobile,
-   horizontal → desktop), tanto al iniciar como en cada resize/cambio
-   de orientación que cruce el umbral (con debounce). El estado de
-   carga anterior simplemente se descarta: los frames que venían
-   bajando terminan escribiendo en un array que ya nadie usa, no hace
-   falta abortar el request explícitamente.
+   Dos secuencias de fotogramas webp (generadas con scripts/mejorar-hero.mjs):
+     - Desktop: 120 frames 1920x1080 en /seq/
+     - Mobile:  120 frames 1080x1920 en /seq-mobile/
+   Ambas en modo "cover" (llenan el viewport sin franjas), recortando con
+   foco en el punto focal. La secuencia se elige por orientación de
+   viewport (vertical → mobile, horizontal → desktop), tanto al iniciar
+   como en cada resize/cambio de orientación que cruce el umbral. El
+   estado de carga anterior simplemente se descarta.
+   Calidad:
+     - El canvas usa la densidad real de la pantalla (hasta 3x) y
+       suavizado "high", así el navegador no estira un canvas chico.
+     - El primer frame se decodifica (img.decode) antes de dibujarse,
+       para que aparezca nítido y no a medio decodificar.
+     - Se redibuja ante cualquier cambio de tamaño real del stage
+       (ResizeObserver), carga de la página y vuelta desde el historial.
    El scroll controla el frame dibujado en el canvas.
    ========================================================================== */
 
@@ -23,25 +27,22 @@ const CONFIGS = {
   desktop: {
     ruta: '/seq/',
     frames: 120,
-    width: 1280,
-    height: 720,
+    width: 1920,
+    height: 1080,
     modo: 'cover',
     focal: 0.6,
   },
   mobile: {
     ruta: '/seq-mobile/',
     frames: 120,
-    width: 900,
-    height: 1600,
-    modo: 'fit-ancho',
+    width: 1080,
+    height: 1920,
+    modo: 'cover',
     focal: 0.5,
-    /* Opacidad de la propia imagen dibujada en el canvas (no un velo
-       aparte): así se funde de verdad con el fondo --color-crema. */
-    opacidad: 0.55,
   },
 };
 
-const MAX_DPR = 2;
+const MAX_DPR = 3;
 
 const framePath = (config, i) =>
   `${config.ruta}frame_${String(i + 1).padStart(3, '0')}.webp`;
@@ -97,8 +98,20 @@ export function initHero() {
       if (priority) img.fetchPriority = 'high';
       img.decoding = 'async';
       img.onload = () => {
-        st.images[i] = img;
-        resolve(img);
+        /* El primer frame se decodifica antes de dibujarse, así sale
+           nítido y completo de entrada. El resto no: tener 120 frames
+           decodificados a la vez ocuparía ~1GB de memoria en un celular. */
+        const listo =
+          priority && img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+        listo.then(() => {
+          st.images[i] = img;
+          /* Si es justo el frame que el scroll está pidiendo y se venía
+             mostrando uno vecino, reemplazarlo ya por el correcto */
+          if (st === state && i === targetFrame && st.currentFrame !== i) {
+            drawFrame(st, i);
+          }
+          resolve(img);
+        });
       };
       img.onerror = () => {
         st.failed.add(i); // frame que falla se saltea
@@ -129,6 +142,9 @@ export function initHero() {
     canvas.width = Math.round(cssW * dpr);
     canvas.height = Math.round(cssH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    /* Cambiar el tamaño resetea el contexto: volver a pedir calidad alta */
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
   }
 
   function drawFrame(st, i) {
@@ -140,7 +156,7 @@ export function initHero() {
     let dx, dy, drawW, drawH;
 
     if (config.modo === 'cover') {
-      /* cover: escala mínima que llena el viewport sin deformar */
+      /* cover: escala mínima que llena el viewport sin deformar ni dejar franjas */
       const scale = Math.max(cssW / config.width, cssH / config.height);
       drawW = config.width * scale;
       drawH = config.height * scale;
@@ -161,16 +177,23 @@ export function initHero() {
     }
 
     ctx.clearRect(0, 0, cssW, cssH);
-    ctx.globalAlpha = config.opacidad ?? 1;
     ctx.drawImage(img, dx, dy, drawW, drawH);
-    ctx.globalAlpha = 1;
     st.currentFrame = idx;
   }
 
+  /* Último frame pedido por el scroll (puede no estar cargado todavía) */
+  let targetFrame = 0;
+
   function requestFrame(st, i) {
     const clamped = Math.max(0, Math.min(st.config.frames - 1, i));
+    targetFrame = clamped;
     if (clamped === st.currentFrame && st.images[clamped]) return;
     drawFrame(st, clamped);
+  }
+
+  /* Redibujar el frame actual tal cual (tras un resize del canvas) */
+  function redraw() {
+    drawFrame(state, targetFrame);
   }
 
   resizeCanvas();
@@ -193,7 +216,10 @@ export function initHero() {
   async function preload(st) {
     // Frame 1 primero, con prioridad alta: el hero nunca se ve vacío
     await loadFrame(st, 0, true);
-    if (st === state) drawFrame(st, 0);
+    if (st === state) {
+      drawFrame(st, targetFrame);
+      stage.classList.add('is-listo');
+    }
 
     // El resto arranca DESPUÉS del primer paint para no competir
     // con el render inicial (rAF doble + timeout corto)
@@ -216,22 +242,44 @@ export function initHero() {
     return;
   }
 
-  /* ---------- Resize / cambio de orientación ---------- */
+  /* ---------- Resize / cambio de orientación ----------
+     El canvas se ajusta en el mismo frame en que cambia el stage
+     (ResizeObserver), así nunca queda estirado ni pixelado aunque en
+     el celular aparezca/desaparezca la barra del navegador. El cambio de
+     secuencia (desktop <-> mobile) sí va con debounce. */
   let resizeTimer;
-  window.addEventListener('resize', () => {
+  function onResize() {
+    if (stage.clientWidth !== cssW || stage.clientHeight !== cssH) {
+      resizeCanvas();
+      redraw();
+    }
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      resizeCanvas();
       const newKey = pickKey();
       if (newKey !== state.key) {
         activeKey = newKey;
         state = createState(activeKey);
         applyStageClass();
         preload(state);
-      } else if (state.currentFrame >= 0) {
-        drawFrame(state, state.currentFrame);
       }
     }, 200);
+  }
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(onResize).observe(stage);
+  }
+  window.addEventListener('resize', onResize);
+
+  /* Redibujar con todo asentado (fuentes, layout final) y al volver con
+     el botón "atrás" (bfcache), donde algunos navegadores pierden el canvas */
+  window.addEventListener('load', () => {
+    resizeCanvas();
+    redraw();
+  });
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      resizeCanvas();
+      redraw();
+    }
   });
 
   /* ---------- Scrubbing con ScrollTrigger ---------- */
@@ -273,6 +321,17 @@ export function initHero() {
       outro.style.visibility = outroP <= 0 ? 'hidden' : 'visible';
       outro.setAttribute('aria-hidden', outroP <= 0 ? 'true' : 'false');
     },
+  });
+
+  /* Entrada del título al cargar */
+  gsap.from(intro.children, {
+    opacity: 0,
+    y: 28,
+    duration: 1.1,
+    ease: 'power3.out',
+    stagger: 0.12,
+    delay: 0.15,
+    clearProps: 'transform',
   });
 
   /* Hint: rebote sutil */

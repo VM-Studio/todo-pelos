@@ -17,6 +17,9 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <!-- Primer frame del hero: se pide antes que nada para que se vea de entrada -->
+  <link rel="preload" as="image" href="/seq-mobile/frame_001.webp" media="(orientation: portrait)" fetchpriority="high" />
+  <link rel="preload" as="image" href="/seq/frame_001.webp" media="(orientation: landscape)" fetchpriority="high" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -73,6 +76,7 @@
 
     <div class="quienes-somos-grid">
       <article class="quienes-somos-item">
+        <p class="quienes-somos-num">01</p>
         <h3 class="quienes-somos-titulo">Nuestro taller propio</h3>
         <p class="quienes-somos-desc">
           Contamos con nuestro propio taller de elaboración, donde creamos y
@@ -82,6 +86,7 @@
         </p>
       </article>
       <article class="quienes-somos-item">
+        <p class="quienes-somos-num">02</p>
         <h3 class="quienes-somos-titulo">Acompañamiento con sensibilidad</h3>
         <p class="quienes-somos-desc">
           Sabemos que la pérdida de cabello puede atravesar mucho más que
@@ -100,6 +105,34 @@
       Porque recuperar tu imagen también puede ser una forma de volver a
       sentirte vos misma.
     </p>
+  </section>
+
+  <!-- EL SALÓN — foto del local fija de fondo: la sección "pasa por
+       encima" de la imagen mientras se scrollea -->
+  <section class="salon" id="salon" aria-labelledby="salon-titulo">
+    <div class="salon-fondo" aria-hidden="true">
+      <img class="salon-fondo-img" src="/img/salon.webp" alt="" width="1920" height="1074" decoding="async" />
+    </div>
+
+    <div class="salon-contenido">
+      <div class="salon-card">
+        <p class="section-eyebrow">Nuestro espacio</p>
+        <h2 class="section-title" id="salon-titulo">
+          Un salón pensado para que <em>te sientas en casa.</em>
+        </h2>
+        <p class="salon-texto">
+          Luz natural, espejos dorados y un ambiente cálido y tranquilo.
+          Acá trabajamos sin apuro y a tu ritmo, para que cada visita sea un
+          momento para vos.
+        </p>
+        <ul class="salon-chips">
+          <li>Taller propio</li>
+          <li>Atención personalizada</li>
+          <li>Del Viso, Buenos Aires</li>
+        </ul>
+        <a class="salon-cta" data-href="mapsUrl" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+      </div>
+    </div>
   </section>
 
   <!-- SERVICIOS -->
@@ -132,6 +165,124 @@
 
     <div class="servicios-cta-wrap">
       <a href="#" class="servicios-cta">Ver todos los servicios</a>
+    </div>
+  </section>
+
+  <!-- FRANJA EN MOVIMIENTO -->
+  <div class="marquesina" aria-hidden="true">
+    <div class="marquesina-pista">
+      <span>Pelucas</span><span>Extensiones</span><span>Apliques</span><span>Balayage</span><span>Taller propio</span><span>Pony tail</span>
+      <span>Pelucas</span><span>Extensiones</span><span>Apliques</span><span>Balayage</span><span>Taller propio</span><span>Pony tail</span>
+    </div>
+  </div>
+
+  <!-- PELUCAS — colección -->
+  <section class="pelucas" id="pelucas" aria-labelledby="pelucas-titulo">
+    <div class="pelucas-top">
+      <div class="pelucas-intro">
+        <header class="section-head">
+          <p class="section-eyebrow section-eyebrow--caramelo">Colección de pelucas</p>
+          <h2 class="section-title section-title--claro" id="pelucas-titulo">
+            Tu nuevo look, <em>listo para vos.</em>
+          </h2>
+          <p class="section-subtitulo section-subtitulo--claro">
+            Pelucas de pelo natural y fibra premium, livianas y con movimiento
+            real. Las adaptamos en nuestro taller para que te queden como
+            propias.
+          </p>
+        </header>
+
+        <ul class="pelucas-beneficios">
+          <li><span>01</span>Pelo natural y fibra premium importada</li>
+          <li><span>02</span>Corte, color y ajuste a tu medida</li>
+          <li><span>03</span>Asesoramiento privado y con sensibilidad</li>
+        </ul>
+
+        <div class="pelucas-acciones">
+          <a class="pelucas-cta" data-href="waPelucas" href="#" target="_blank" rel="noopener">Consultar disponibilidad</a>
+          <button class="pelucas-link" type="button" data-visor-abrir="0">Ver galería completa</button>
+        </div>
+      </div>
+
+      <button class="pelucas-destacada" type="button" data-visor-abrir="0"
+        aria-label="Ver la colección de pelucas en grande">
+        <img src="/img/pelucas/peluca-01.webp" alt="Colección de pelucas Todo Pelos en el showroom" width="1600"
+          height="900" loading="lazy" decoding="async" />
+        <span class="pelucas-destacada-badge">Showroom Todo Pelos</span>
+        <span class="pelucas-destacada-ver" aria-hidden="true">Ver galería</span>
+      </button>
+    </div>
+
+    <div class="pelucas-carrusel-wrap">
+      <div class="pelucas-carrusel" role="list"></div>
+      <div class="pelucas-nav" aria-hidden="true">
+        <span class="pelucas-nav-barra"><span class="pelucas-nav-fill"></span></span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CORTINAS Y PONY TAILS -->
+  <section class="cortinas" id="cortinas" aria-labelledby="cortinas-titulo">
+    <header class="section-head section-head--center">
+      <p class="section-eyebrow">Cortinas &amp; pony tails</p>
+      <h2 class="section-title" id="cortinas-titulo">
+        Largo y volumen, <em>en minutos.</em>
+      </h2>
+      <p class="section-subtitulo">
+        Piezas que se colocan y se sacan fácil, en tonos pensados para
+        fundirse con tu pelo. Las adaptamos en nuestro propio taller.
+      </p>
+    </header>
+
+    <div class="cortinas-categorias">
+      <article class="cortinas-cat">
+        <button class="cortinas-cat-media" type="button" data-visor-foto="01"
+          aria-label="Ver la colección de cortinas en grande">
+          <img src="/img/cortinas/cortina-01-feature.webp" alt="Perchero con la colección de cortinas de Todo Pelos"
+            width="1200" height="900" loading="lazy" decoding="async" />
+          <span class="cortinas-cat-badge">Colección</span>
+        </button>
+        <div class="cortinas-cat-info">
+          <p class="cortinas-cat-num">— 01</p>
+          <h3 class="cortinas-cat-titulo">Cortinas</h3>
+          <p class="cortinas-cat-texto">
+            Largo y volumen en una sola pieza. Lacias u onduladas, del rubio
+            platino al negro azabache.
+          </p>
+          <button class="cortinas-cat-link" type="button" data-filtro-ir="cortina">Ver tonos</button>
+        </div>
+      </article>
+
+      <article class="cortinas-cat">
+        <button class="cortinas-cat-media" type="button" data-visor-foto="02"
+          aria-label="Ver el pony tail puesto en grande">
+          <img src="/img/cortinas/cortina-02-feature.webp" alt="Pony tail cobrizo ondulado puesto en una clienta"
+            width="1200" height="900" loading="lazy" decoding="async" />
+          <span class="cortinas-cat-badge">Así queda puesto</span>
+        </button>
+        <div class="cortinas-cat-info">
+          <p class="cortinas-cat-num">— 02</p>
+          <h3 class="cortinas-cat-titulo">Pony tails</h3>
+          <p class="cortinas-cat-texto">
+            Una colita alta, larga y con movimiento, lista para un evento o
+            para el día a día.
+          </p>
+          <button class="cortinas-cat-link" type="button" data-filtro-ir="pony">Ver tonos</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="cortinas-tonos" id="cortinas-tonos">
+      <div class="cortinas-tonos-head">
+        <h3 class="cortinas-tonos-titulo">Tonos <em>disponibles</em></h3>
+        <div class="cortinas-filtros" role="group" aria-label="Filtrar por tipo">
+          <button class="cortinas-filtro" type="button" data-filtro="todos" aria-pressed="true">Todos</button>
+          <button class="cortinas-filtro" type="button" data-filtro="cortina" aria-pressed="false">Cortinas</button>
+          <button class="cortinas-filtro" type="button" data-filtro="pony" aria-pressed="false">Pony tails</button>
+        </div>
+      </div>
+      <div class="cortinas-grid" role="list"></div>
     </div>
   </section>
 

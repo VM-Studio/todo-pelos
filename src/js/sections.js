@@ -20,6 +20,7 @@ function initReveals() {
 
   const groups = [
     ['#quienes-somos .section-head', '#quienes-somos .quienes-somos-item', '#quienes-somos .quienes-somos-cierre', '#quienes-somos .quienes-somos-firma'],
+    ['#salon .salon-card'],
     ['#servicios .section-head', '#servicios .servicio', '#servicios .servicios-cta-wrap'],
     ['#antes-despues .section-head', '#antes-despues .comparador'],
     ['#calidad .section-head', '#calidad .calidad-item', '#calidad .calidad-cierre'],
@@ -35,6 +36,8 @@ function initReveals() {
       duration: 0.9,
       ease: 'power2.out',
       stagger: 0.12,
+      /* sin transform inline al terminar: si no, pisa los hover con translate */
+      clearProps: 'transform',
       scrollTrigger: {
         trigger: els[0],
         start: 'top 80%',
@@ -42,6 +45,26 @@ function initReveals() {
       },
     });
   });
+}
+
+/* ---------- El salón: leve zoom-out de la foto fija mientras se la recorre ---------- */
+function initSalon() {
+  const img = document.querySelector('.salon-fondo-img');
+  if (!img || reducedMotion) return;
+  gsap.fromTo(
+    img,
+    { scale: 1.14 },
+    {
+      scale: 1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#salon',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true,
+      },
+    }
+  );
 }
 
 /* ---------- Comparador antes/después ---------- */
@@ -140,6 +163,7 @@ function initFormulario() {
 
 export function initSections() {
   initReveals();
+  initSalon();
   const comparador = initComparador();
   initGaleria(comparador);
   initFormulario();
