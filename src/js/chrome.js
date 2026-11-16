@@ -136,7 +136,7 @@ function fillContacto() {
 
   if (!reducedMotion) {
     const els = gsap.utils.toArray(
-      '#contacto .section-head, #contacto .contacto-dato, #contacto .contacto-cta-col'
+      '#contacto .section-head, #contacto .contacto-mapa, #contacto .contacto-dato, #contacto .contacto-cta-col'
     );
     gsap.from(els, {
       opacity: 0,
